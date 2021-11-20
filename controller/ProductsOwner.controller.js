@@ -23,6 +23,27 @@ exports.getProductsOwnerByUserId = (req,res,next) => {
         status: 0
     }))
 }
+exports.getUserIdByProductId = (req,res,next) => {
+    const _productId = req.params.productId
+    return ProductOwner.find().then(result => {
+        for(let i = 0; i < result.length; i++) {
+            if(result[i].productsId.includes(_productId)) {
+                return res.status(200).json({
+                    message: 'successful',
+                    status:1,
+                    result: result[i].userId
+                })
+            }
+        }
+        return res.status(404).json({
+            message: 'Not found',
+            status: 0
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status: 0
+    }))
+}
 
 exports.getProductsOwnerDetail = (req,res,next) => {
     const _userId = req.params.userId

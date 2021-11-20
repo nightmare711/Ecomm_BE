@@ -23,6 +23,26 @@ exports.getUserById = (req,res,next) => {
     }))
 }
 
+exports.login = (req,res,next) => {
+    const { username, password } = req.body
+    return User.findOne({username, password}).then(result => {
+        if(result) {
+            return res.status(200).json({
+                message: 'login successful',
+                status:1,
+                result: result
+            })
+        }
+        return res.status(404).json({
+            status:0,
+            message: 'Not found'
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+}
+
 exports.postUser = (req,res,next) => {
     const {first_name, last_name, username, email, password, phone_number, dateOfBirth, address_metamask, bio, facebook, instagram} = req.body
     const user = new User({first_name, last_name, username, email, password, phone_number, dateOfBirth, address_metamask, bio, facebook, instagram})
