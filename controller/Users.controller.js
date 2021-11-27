@@ -35,7 +35,26 @@ exports.login = (req,res,next) => {
         }
         return res.status(404).json({
             status:0,
-            message: 'Not found'
+            message: 'Invalid email or password'
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+}
+
+exports.validate = (req,res,next) => {
+    const {username} = req.body
+    return User.findOne({username}).then((user) => {
+        if(!user) {
+            return res.status(200).json({
+                message: 'success',
+                status: 1
+            })
+        }
+        return res.status(500).json({
+            message: 'Duplicated username',
+            status:0
         })
     }).catch(err => res.status(500).json({
         message: err.message,
@@ -46,7 +65,7 @@ exports.login = (req,res,next) => {
 exports.postUser = (req,res,next) => {
     const {first_name, last_name, username, email, password, phone_number, dateOfBirth, address_metamask, bio, facebook, instagram} = req.body
     const user = new User({first_name, last_name, username, email, password, phone_number, dateOfBirth, address_metamask, bio, facebook, instagram})
-    return User.findOne({email}).then(result => {
+    return User.findOne({username}).then(result => {
         if(!result) {
             return user.save().then(() => res.status(201).json({
                 message:'successful',
@@ -86,3 +105,4 @@ exports.updateUser = (req,res,next) => {
         }
     }).catch(err => res.status(500).json({message: err.message, status:0}))
 }
+

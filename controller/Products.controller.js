@@ -1,6 +1,5 @@
 const Product = require('../model/Products')
 const User = require('../model/Users')
-const ProductOwner = require('../model/ProductOwner')
 
 exports.getProducts = (req,res,next) => {
     return Product.find().then(result => res.status(200).json({
@@ -26,35 +25,18 @@ exports.getProductById = (req,res,next) => {
     }))
 }
 
+
+
 exports.postProduct = (req,res,next) => {
-    const { userId ,name, product_type, price, image, imageHover, totalSupply, bought, description, price_coin, addition_information} = req.body
-    const product = new Product({name, product_type, price, image, imageHover, totalSupply, bought, description, price_coin, addition_information})
-    return User.findById(userId).then(user => {
+    const { productOwner ,name, product_type, price, image, imageHover, totalSupply, bought, description, price_coin, addition_information} = req.body
+    const product = new Product({productOwner, name, product_type, price, image, imageHover, totalSupply, bought, description, price_coin, addition_information})
+    return User.findById(productOwner).then(user => {
         if(user) {
             return Product.findOne({name: name}).then(result => {
                 if(!result) {
-                    return product.save().then(result => {
-                        const id = result.id
-                        return ProductOwner.findOne({userId}).then(owner => {
-                            if(owner) {
-                                const productsId = owner.productsId
-                                productsId.push(id)
-                                owner.productsId = productsId
-                                return owner.save().then(() => res.status(201).json({
-                                    message: 'successful',
-                                    status: 1
-                                }))
-                            } else {
-                                const productOwner = new ProductOwner({userId, productsId: [id]})
-                                return productOwner.save().then(() => res.status(201).json({
-                                    message: 'successful',
-                                    status: 1
-                                }))
-                            }
-                        })
-                    }).catch(err => res.status(500).json({
-                        message: err,
-                        status: 0
+                    return product.save().then(result => res.status(201).json({
+                        message: 'successful',
+                        status: 1
                     }))
                 } else {
                     return res.status(500).json({
@@ -62,7 +44,109 @@ exports.postProduct = (req,res,next) => {
                         status: 0
                     })
                 }
-            })
+            }).catch(err => res.status(500).json({
+                message: err.message,
+                status: 0
+            }))
         }
     })
+}
+
+exports.updateProduct = (req,res,next) => {
+    const productId = req.params.productId
+    const { name, product_type, price, image, imageHover, totalSupply, description, price_coin} = req.body
+    return Product.findById(productId).then(product => {
+        if(product) {
+            product.name = name || product.name
+            product.product_type = product_type || product.product_type
+            product.price = price || product.price
+            product.image = image || product.image
+            product.imageHover = imageHover || product.imageHover
+            product.totalSupply = totalSupply || product.totalSupply
+            product.description = description || product.description
+            product.price_coin = price_coin ||product.price_coin
+            return product.save().then(result => res.status(200).json({
+                message: 'Update successful',
+                status: 1
+            }))
+        } else {
+            return res.status(500).json({
+                message: 'Not found product',
+                status:0
+            })
+        }
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status: 0
+    }))
+}
+
+exports.getProductByOwner = (req,res,next) => {
+    const ownerId = req.params.ownerId
+    console.log(ownerId)
+    return Product.find({productOwner: ownerId}).then(result => res.status(201).json({
+        message: 'successful',
+        status: 1,
+        result: result
+    })).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+}
+exports.getMostProductByOwner = (req,res,next) => {
+    const ownerId = req.params.ownerId
+    const size = req.query.size || 1
+    return Product.find({productOwner: ownerId}).then(result => {
+        result.sort((a, b) => a.bought < b.bought && 1 || -1)
+        if(result.length > size) {
+            result.length = size
+        }
+        return res.status(201).json({
+            message: 'successful',
+            status: 1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+} 
+exports.getMostPriceByOwner = (req,res,next) => {
+    const ownerId = req.params.ownerId
+    const size = req.query.size || 1
+    return Product.find({productOwner: ownerId}).then(result => {
+        result.sort((a, b) => a.price < b.price && 1 || -1)
+        
+        if(result.length > size) {
+            
+            result.length = size
+        }
+        return res.status(201).json({
+            message: 'successful',
+            status: 1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+} 
+exports.getHighestTotalSupply = (req,res,next) => {
+    const ownerId = req.params.ownerId
+    const size = req.query.size || 1
+    return Product.find({productOwner: ownerId}).then(result => {
+        result.sort((a, b) => a.totalSupply < b.totalSupply && 1 || -1)
+        
+        if(result.length > size) {
+            result.length = size
+        }
+        return res.status(201).json({
+            message: 'successful',
+            status: 1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
 }

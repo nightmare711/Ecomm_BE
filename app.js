@@ -4,11 +4,14 @@ const bodyParser = require('body-parser')
 const ProductRoute = require('./routes/Products')
 const UsersRoute = require('./routes/Users')
 const ProductOwnerRoute = require('./routes/ProductsOwner')
+const cors = require('cors')
 
 const app = express()
 
+app.use(cors())
+
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }))
  
 // parse application/json
 app.use(bodyParser.json())

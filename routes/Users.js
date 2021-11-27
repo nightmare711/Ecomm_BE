@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.get('/', UsersController.getUsers)
 router.get('/:id', UsersController.getUserById)
+router.post('/validate', UsersController.validate)
 router.post('/register', UsersController.postUser)
 router.post('/update/:id', UsersController.updateUser)
 router.post('/login', UsersController.login)

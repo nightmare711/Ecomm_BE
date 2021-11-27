@@ -5,6 +5,10 @@ const productsSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    productOwner: {
+        type: String,
+        required:true
+    },
     product_type: {
         type: String,
         required:true
@@ -32,6 +36,9 @@ const productsSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true
+    },
+    discount: {
+        type: Number,
     },
     price_coin: {
         type: Number,
