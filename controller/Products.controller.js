@@ -2,11 +2,22 @@ const Product = require('../model/Products')
 const User = require('../model/Users')
 
 exports.getProducts = (req,res,next) => {
-    return Product.find().then(result => res.status(200).json({
-        message: 'successful',
-        status:1,
-        result: result
-    })).catch(err => res.status(500).json({
+    const size = req.query.size
+    return Product.find().then(result => {
+        if(size) {
+            result.length = size
+            res.status(200).json({
+                message: 'successful',
+                status:1,
+                result: result
+            })
+        }
+        res.status(200).json({
+            message: 'successful',
+            status:1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
         message: err,
         status: 0,
 
@@ -148,5 +159,76 @@ exports.getHighestTotalSupply = (req,res,next) => {
     }).catch(err => res.status(500).json({
         message: err.message,
         status:0
+    }))
+}
+
+exports.getProductByType = (req,res,next) => {
+    const type = req.params.type
+    return Product.find({product_type: type}).then(result => {
+        return res.status(201).json({
+            message:'successful',
+            status: 1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0
+    }))
+}
+
+exports.getRecentAddedProduct = (req,res,next) => {
+    const size = req.query.size
+    const type = req.query.type
+    if(type) {
+        return Product.find({product_type: type}).then(result => {
+            if(result.length > size) {
+                const temp = []
+                for(let i = result.length - 1; i > 0 ; i--) {
+                    console.log(temp.length,size)
+                    if(temp.length === parseInt(req.query.size)) {
+                        break;
+                    }
+                    temp.push(result[i])
+                }
+                return res.status(200).json({
+                    message: 'successful',
+                    status: 1,
+                    result: temp
+                })
+            }
+            return res.status(200).json({
+                message: 'successful',
+                status: 1,
+                result: result
+            })
+        }).catch(err => res.status(500).json({
+            message: err.message,
+            status:0,
+        }))
+    }
+    return Product.find().then(result => {
+        if(result.length > size) {
+            const temp = []
+            for(let i = result.length - 1; i > 0 ; i--) {
+                console.log(temp.length,size)
+                if(temp.length === parseInt(req.query.size)) {
+                    break;
+                }
+                temp.push(result[i])
+            }
+            return res.status(200).json({
+                message: 'successful',
+                status: 1,
+                result: temp
+            })
+        }
+        return res.status(200).json({
+            message: 'successful',
+            status: 1,
+            result: result
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status:0,
     }))
 }
