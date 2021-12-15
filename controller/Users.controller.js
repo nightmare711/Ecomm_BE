@@ -1,4 +1,5 @@
 const User = require('../model/Users')
+const Summary = require('../model/Summary')
 
 exports.getUsers = (req,res,next) => {
     return User.find().then(result => res.status(200).json({
@@ -67,10 +68,30 @@ exports.postUser = (req,res,next) => {
     const user = new User({first_name, last_name, username, email, password, phone_number, dateOfBirth, address_metamask, bio, facebook, instagram})
     return User.findOne({username}).then(result => {
         if(!result) {
-            return user.save().then(() => res.status(201).json({
-                message:'successful',
-                status:1
-            })).catch(err => res.status(500).json({message: err.message, status:0}))
+            return user.save().then((user) => {
+                const d = new Date();
+                let month = d.getMonth();
+                const summary = new Summary({id: user._id, summary: [{
+                    month_current: month - 2,
+                    totalProduct: 0,
+                }, {
+                    month_current: month -1,
+                    totalProduct: 0,
+                    totalPrice: 0
+                }, {
+                    month_current: month,
+                    totalProduct: 0,
+                    totalPrice: 0
+                }, {
+                    month_current: month + 1,
+                    totalProduct: 0, 
+                    totalPrice: 0
+                }]}) 
+                return summary.save().then(resu => res.status(201).json({
+                    message:'successful',
+                    status:1
+                }))
+            }).catch(err => res.status(500).json({message: err.message, status:0}))
         } else {
             return res.status(500).json({
                 message: 'Duplicated data',
