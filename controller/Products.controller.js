@@ -20,9 +20,24 @@ exports.getProducts = (req,res,next) => {
     }).catch(err => res.status(500).json({
         message: err,
         status: 0,
+    }))
+}
+
+exports.deleteProduct = (req,res,next) => {
+    const productId = req.params.productId
+    return Product.findByIdAndDelete(productId).then(result =>{
+        console.log(result)
+        return res.status(200).json({
+            message: 'successful',
+            status: 1
+        })
+    }).catch(err => res.status(500).json({
+        message: err.message,
+        status: 0,
 
     }))
 }
+
 
 exports.getProductById = (req,res,next) => {
     const id = req.params.id

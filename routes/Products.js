@@ -13,6 +13,7 @@ router.get('/owner/price/:ownerId', ProductController.getMostPriceByOwner)
 router.post('/update/:productId', ProductController.updateProduct)
 router.get('/owner/highest-supply/:ownerId', ProductController.getHighestTotalSupply)
 router.get('/type/:type', ProductController.getProductByType)
+router.post('/delete/:productId', ProductController.deleteProduct)
 
 
 module.exports = router

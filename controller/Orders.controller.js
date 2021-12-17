@@ -22,12 +22,25 @@ exports.postOrder = (req,res,next) => {
 
 exports.getOrderByOwner = (req,res,next) => {
     const owner = req.params.ownerId;
+    console.log('##owner', owner)
     return Order.find().then(result => {
         const orderProduct = []
         for(let i = 0; i < result.length; i++) {
             result[i].listProducts.map(product => {
                 if(product.productOwner === owner) {
-                    orderProduct.push(product)
+                    orderProduct.push({
+                        ...product,
+                        firstName: result[i].firstName,
+                        lastName: result[i].lastName,
+                        payment: result[i].payment,
+                        address: result[i].address,
+                        country: result[i].country,
+                        city: result[i].city,
+                        phone: result[i].phone,
+                        email: result[i].email,
+                        status: result[i].status,
+                        totalPrice: result[i].price
+                    })
                 }
             })
         }
