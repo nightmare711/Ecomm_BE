@@ -3,6 +3,7 @@ const Product = require('../model/Products')
 
 exports.postOrder = (req,res,next) => {
     const { totalPrice, listProducts, payment, firstName, lastName, address, country,city, phone, email,addition } = req.body
+    console.log(req.body)
     const order = new Order({  totalPrice, listProducts, payment, firstName, lastName, address, country,city, phone, email,addition, status: 0 })
     return order.save().then(async (result) => {
         for(let i = 0; i < listProducts.length; i++) {

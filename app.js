@@ -12,7 +12,7 @@ const app = express()
 app.use(cors())
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }))
+app.use(bodyParser.urlencoded({ extended: false, limit: '100mb' }))
  
 // parse application/json
 app.use(bodyParser.json())
