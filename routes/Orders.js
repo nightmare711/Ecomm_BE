@@ -3,6 +3,7 @@ const express =  require('express')
 
 const router = express.Router()
 
+router.get('/', OrderController.getOrders)
 router.post('/', OrderController.postOrder)
 router.get('/:ownerId', OrderController.getOrderByOwner)
 

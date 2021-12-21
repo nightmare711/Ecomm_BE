@@ -55,3 +55,10 @@ exports.getOrderByOwner = (req,res,next) => {
         status: 0
     }))
 }
+exports.getOrders = (req,res,next) => {
+    return Order.find().then(result => res.status(200).json({
+        message: 'successful',
+        status:1,
+        result: result
+    }))
+} 
